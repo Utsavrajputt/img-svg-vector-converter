@@ -18,32 +18,34 @@
 
     <section class="controls">
 
-       <div class="top-bar">
-    <input type="file" id="imageFile" accept="image/*">
-<div class="settings">
+        <div class="top-bar">
 
-    <div class="setting">
-        <label>Colors</label>
-        <input type="range" id="colors" min="2" max="64" value="16">
-        <span id="colorsValue">16</span>
-    </div>
+            <input type="file" id="imageFile" accept="image/*">
 
-    <div class="setting">
-        <label>Detail</label>
-        <select id="detail">
-            <option value="low">Low</option>
-            <option value="medium" selected>Medium</option>
-            <option value="high">High</option>
-        </select>
-    </div>
-<input id="colors">
-<span id="colorsValue"></span>
-<select id="detail"></select>
-</div>
-    <button id="traceBtn">
-        Convert
-    </button>
-</div>
+            <div class="settings">
+
+                <div class="setting">
+                    <label>Colors</label>
+                    <input type="range" id="colors" min="2" max="64" value="16">
+                    <span id="colorsValue">16</span>
+                </div>
+
+                <div class="setting">
+                    <label>Detail</label>
+                    <select id="detail">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button id="traceBtn">
+                Image → SVG
+            </button>
+
+        </div>
 
         <!-- Preview Section -->
         <div class="viewer-grid">
@@ -63,19 +65,24 @@
         <!-- Output Section -->
         <div class="output-grid">
 
+            <!-- SVG Code -->
             <div class="panel">
 
                 <h3>📄 SVG Code</h3>
 
-                <textarea id="svgOutput" readonly></textarea>
+                <textarea
+                    id="svgOutput"
+                    placeholder="Generated SVG ya apna SVG yahan paste kare..."></textarea>
 
                 <div class="buttons">
                     <button id="copySvgBtn">Copy SVG</button>
                     <button id="downloadSvgBtn">Download SVG</button>
+                    <button id="convertXmlBtn">SVG → XML</button>
                 </div>
 
             </div>
 
+            <!-- Android XML -->
             <div class="panel">
 
                 <h3>🤖 Android XML</h3>

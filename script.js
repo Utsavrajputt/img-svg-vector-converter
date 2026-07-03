@@ -19,6 +19,8 @@ const downloadBtn     = document.getElementById("downloadBtn");
 const colors = document.getElementById("colors");
 const colorsValue = document.getElementById("colorsValue");
 const detail = document.getElementById("detail");
+const convertXmlBtn = document.getElementById("convertXmlBtn");
+const downloadPreviewBtn = document.getElementById("downloadPreviewBtn");
 
 colors.oninput = () => {
     colorsValue.textContent = colors.value;
@@ -77,7 +79,9 @@ traceBtn.addEventListener("click", () => {
     traceBtn.disabled = true;
     traceBtn.textContent = "Converting...";
 
-    ImageTracer.imageToSVG(imageData, function (svgString) {
+   ImageTracer.imageToSVG(
+    imageData,
+    function (svgString) {
 
         svgOutput.value = svgString;
 
@@ -87,16 +91,13 @@ traceBtn.addEventListener("click", () => {
 
         if (svg) {
 
-            // Pehle width/height read karo
             const w = svg.getAttribute("width") || "432";
             const h = svg.getAttribute("height") || "432";
 
-            // Agar viewBox nahi hai to create karo
             if (!svg.hasAttribute("viewBox")) {
                 svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
             }
 
-            // Phir width/height remove karo
             svg.removeAttribute("width");
             svg.removeAttribute("height");
 
@@ -106,14 +107,21 @@ traceBtn.addEventListener("click", () => {
             svg.style.height = "100%";
             svg.style.display = "block";
         }
-        
 
         xmlOutput.value = convertSvgToVector(svgString);
 
         traceBtn.disabled = false;
-        traceBtn.textContent = "Convert";
-
-    });
+        traceBtn.textContent = "Image → SVG";
+    },
+    {
+        numberofcolors: Number(colors.value),
+        ltres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
+        qtres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
+        pathomit: 0,
+        scale: 1,
+        viewbox: true
+    }
+);
 
 });
 
@@ -282,5 +290,92 @@ downloadBtn.addEventListener("click", () => {
     document.body.removeChild(a);
 
     URL.revokeObjectURL(url);
+
+});
+/* ---------------------------
+   SVG → XML
+---------------------------- */
+
+convertXmlBtn.addEventListener("click", () => {
+
+    const svg = svgOutput.value.trim();
+
+    if (!svg) {
+        alert("Paste or generate SVG first.");
+        return;
+    }
+
+    svgPreview.innerHTML = svg;
+
+    const svgElement = svgPreview.querySelector("svg");
+
+    if (svgElement) {
+
+        const w = svgElement.getAttribute("width") || "432";
+        const h = svgElement.getAttribute("height") || "432";
+
+        if (!svgElement.hasAttribute("viewBox")) {
+            svgElement.setAttribute("viewBox", `0 0 ${w} ${h}`);
+        }
+
+        svgElement.removeAttribute("width");
+        svgElement.removeAttribute("height");
+
+        svgElement.style.width = "100%";
+        svgElement.style.height = "100%";
+        svgElement.style.display = "block";
+
+        svgElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    }
+
+    xmlOutput.value = convertSvgToVector(svg);
+
+});
+/* ---------------------------
+   Download PNG
+---------------------------- */
+
+downloadPreviewBtn.addEventListener("click", () => {
+
+    const svg = svgPreview.querySelector("svg");
+
+    if (!svg) {
+        alert("No preview available.");
+        return;
+    }
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+
+    const svgBlob = new Blob([svgData], {
+        type: "image/svg+xml"
+    });
+
+    const url = URL.createObjectURL(svgBlob);
+
+    const img = new Image();
+
+    img.onload = function () {
+
+        const canvas = document.createElement("canvas");
+
+        canvas.width = svg.viewBox.baseVal.width || 512;
+        canvas.height = svg.viewBox.baseVal.height || 512;
+
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        URL.revokeObjectURL(url);
+
+        const a = document.createElement("a");
+
+        a.download = "preview.png";
+        a.href = canvas.toDataURL("image/png");
+
+        a.click();
+
+    };
+
+    img.src = url;
 
 });

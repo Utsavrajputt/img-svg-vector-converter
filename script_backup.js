@@ -121,7 +121,42 @@ traceBtn.addEventListener("click", () => {
 /* ---------------------------
    SVG → Android XML
 ---------------------------- */
+function getStyleValue(path, property) {
+    const style = path.getAttribute("style");
 
+    if (!style) return null;
+
+    const match = style.match(
+        new RegExp(`${property}\\s*:\\s*([^;]+)`)
+    );
+
+    return match ? match[1].trim() : null;
+}
+
+function normalizeColor(color) {
+
+    if (!color || color === "none") return color;
+
+    if (color.startsWith("rgb")) {
+
+        const rgb = color.match(/\d+/g);
+
+        if (rgb) {
+            return (
+                "#FF" +
+                rgb
+                    .slice(0, 3)
+                    .map(v => Number(v).toString(16).padStart(2, "0"))
+                    .join("")
+            );
+        }
+    }
+
+    if (/^#[0-9a-f]{6}$/i.test(color))
+        return "#FF" + color.substring(1);
+
+    return color;
+}
 function convertSvgToVector(svg) {
 
     const parser = new DOMParser();
@@ -155,7 +190,33 @@ function convertSvgToVector(svg) {
 
     paths.forEach(path => {
 
-        let fill = path.getAttribute("fill") || "#000000";
+       let fill =
+    path.getAttribute("fill") ??
+    getStyleValue(path, "fill") ??
+    "#000000";
+
+let fillOpacity =
+    path.getAttribute("fill-opacity") ??
+    getStyleValue(path, "fill-opacity");
+
+let stroke =
+    path.getAttribute("stroke") ??
+    getStyleValue(path, "stroke");
+
+let strokeWidth =
+    path.getAttribute("stroke-width") ??
+    getStyleValue(path, "stroke-width");
+
+let strokeOpacity =
+    path.getAttribute("stroke-opacity") ??
+    getStyleValue(path, "stroke-opacity");
+
+let fillRule =
+    path.getAttribute("fill-rule") ??
+    getStyleValue(path, "fill-rule");
+
+fill = normalizeColor(fill);
+stroke = normalizeColor(stroke);
 
         if (fill === "none") return;
 
@@ -187,12 +248,40 @@ function convertSvgToVector(svg) {
 
         if (!d) return;
 
-        xml += `
+     let attrs = [];
+
+attrs.push(`android:pathData="${d}"`);
+
+if (fill !== "none")
+    attrs.push(`android:fillColor="${fill}"`);
+
+if (fillOpacity)
+    attrs.push(`android:fillAlpha="${fillOpacity}"`);
+
+if (stroke && stroke !== "none")
+    attrs.push(`android:strokeColor="${stroke}"`);
+
+if (strokeWidth)
+    attrs.push(`android:strokeWidth="${strokeWidth}"`);
+
+if (strokeOpacity)
+    attrs.push(`android:strokeAlpha="${strokeOpacity}"`);
+
+if (fillRule) {
+    attrs.push(
+        `android:fillType="${
+            fillRule === "evenodd"
+                ? "evenOdd"
+                : "nonZero"
+        }"`
+    );
+}
+
+xml += `
 
     <path
-        android:pathData="${d}"
-        android:fillColor="${fill}" />`;
-
+        ${attrs.join("\n        ")}
+    />`;
     });
 
     xml += `
