@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image → SVG → Android Vector</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Image → SVG → Android Vector</h1>
+        <p>Convert PNG, JPG & WebP into Android VectorDrawable XML</p>
+    </header>
+
+    <section class="controls">
+
+       <div class="top-bar">
+    <input type="file" id="imageFile" accept="image/*">
+<div class="settings">
+
+    <div class="setting">
+        <label>Colors</label>
+        <input type="range" id="colors" min="2" max="64" value="16">
+        <span id="colorsValue">16</span>
+    </div>
+
+    <div class="setting">
+        <label>Detail</label>
+        <select id="detail">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+        </select>
+    </div>
+<input id="colors">
+<span id="colorsValue"></span>
+<select id="detail"></select>
+</div>
+    <button id="traceBtn">
+        Convert
+    </button>
+</div>
+
+        <!-- Preview Section -->
+        <div class="viewer-grid">
+
+            <div class="viewer">
+                <h3>🖼 Original Image</h3>
+                <img id="imagePreview" alt="Preview">
+            </div>
+
+            <div class="viewer">
+                <h3>🎨 SVG Preview</h3>
+                <div id="svgPreview"></div>
+            </div>
+
+        </div>
+
+        <!-- Output Section -->
+        <div class="output-grid">
+
+            <div class="panel">
+
+                <h3>📄 SVG Code</h3>
+
+                <textarea id="svgOutput" readonly></textarea>
+
+                <div class="buttons">
+                    <button id="copySvgBtn">Copy SVG</button>
+                    <button id="downloadSvgBtn">Download SVG</button>
+                </div>
+
+            </div>
+
+            <div class="panel">
+
+                <h3>🤖 Android XML</h3>
+
+                <textarea id="xmlOutput" readonly></textarea>
+
+                <div class="buttons">
+                    <button id="copyXmlBtn">Copy XML</button>
+                    <button id="downloadBtn">Download XML</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<script src="imagetracer_v1.2.6.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
