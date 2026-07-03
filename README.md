@@ -29,7 +29,7 @@
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/REPOSITORY_NAME.git
+git clone https://github.com/Utsavrajputt/img-svg-vector-converter.git
 ```
 
 Open the project:
