@@ -21,7 +21,7 @@ const colorsValue = document.getElementById("colorsValue");
 const detail = document.getElementById("detail");
 const convertXmlBtn = document.getElementById("convertXmlBtn");
 const downloadPreviewBtn = document.getElementById("downloadPreviewBtn");
-
+const convertSvgBtn = document.getElementById("convertSvgBtn");
 colors.oninput = () => {
     colorsValue.textContent = colors.value;
 };
@@ -130,6 +130,7 @@ traceBtn.addEventListener("click", () => {
    SVG → Android XML
 ---------------------------- */
 
+
 function convertSvgToVector(svg) {
 
     const parser = new DOMParser();
@@ -184,7 +185,7 @@ function convertSvgToVector(svg) {
         }
 
         if (/^#[0-9a-fA-F]{6}$/.test(fill)) {
-            fill = "#FF" + fill.substring(1);
+            fill = ("#FF" + fill.substring(1)).toUpperCase();
         }
 
         const opacity = parseFloat(path.getAttribute("opacity") || "1");
@@ -208,6 +209,115 @@ function convertSvgToVector(svg) {
 </vector>`;
 
     return xml;
+
+}
+
+/* ---------------------------
+    Android XML T0 SVG
+---------------------------- */
+function convertVectorToSvg(xml) {
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xml, "application/xml");
+
+    const vector = doc.querySelector("vector");
+
+    if (!vector) return null;
+
+    const width =
+        vector.getAttribute("android:viewportWidth") ||
+        vector.getAttribute("viewportWidth") ||
+        "24";
+
+    const height =
+        vector.getAttribute("android:viewportHeight") ||
+        vector.getAttribute("viewportHeight") ||
+        "24";
+
+    let svg =
+`<svg xmlns="http://www.w3.org/2000/svg"
+viewBox="0 0 ${width} ${height}">`;
+
+    const paths = vector.querySelectorAll("path");
+
+    paths.forEach(path => {
+
+        const d =
+            path.getAttribute("android:pathData") ||
+            path.getAttribute("pathData");
+
+        if (!d) return;
+
+        let fill =
+            path.getAttribute("android:fillColor") ||
+            path.getAttribute("fillColor");
+
+        if (!fill) fill = "#000000";
+
+        if (/^#FF/i.test(fill)) {
+            fill = "#" + fill.substring(3);
+        }
+
+        let fillAlpha =
+            path.getAttribute("android:fillAlpha") ||
+            path.getAttribute("fillAlpha");
+
+        let stroke =
+            path.getAttribute("android:strokeColor") ||
+            path.getAttribute("strokeColor");
+
+        if (stroke && /^#FF/i.test(stroke)) {
+            stroke = "#" + stroke.substring(3);
+        }
+
+        let strokeWidth =
+            path.getAttribute("android:strokeWidth") ||
+            path.getAttribute("strokeWidth");
+
+        let strokeAlpha =
+            path.getAttribute("android:strokeAlpha") ||
+            path.getAttribute("strokeAlpha");
+
+        let fillType =
+            path.getAttribute("android:fillType") ||
+            path.getAttribute("fillType");
+
+        svg += `
+
+<path
+d="${d}"
+fill="${fill}"`;
+
+        if (fillAlpha)
+            svg += `
+fill-opacity="${fillAlpha}"`;
+
+        if (stroke)
+            svg += `
+stroke="${stroke}"`;
+
+        if (strokeWidth)
+            svg += `
+stroke-width="${strokeWidth}"`;
+
+        if (strokeAlpha)
+            svg += `
+stroke-opacity="${strokeAlpha}"`;
+
+        if (fillType)
+            svg += `
+fill-rule="${fillType === "evenOdd" ? "evenodd" : "nonzero"}"`;
+
+        svg += `
+/>`;
+
+    });
+
+    svg += `
+
+</svg>`;
+
+    return svg;
 
 }
 
@@ -377,5 +487,48 @@ downloadPreviewBtn.addEventListener("click", () => {
     };
 
     img.src = url;
+
+});
+/* ---------------------------
+   XML → SVG
+---------------------------- */
+
+convertSvgBtn.addEventListener("click", () => {
+
+    const xml = xmlOutput.value.trim();
+
+    if (!xml) {
+        alert("Paste Android Vector XML first.");
+        return;
+    }
+
+    const svg = convertVectorToSvg(xml);
+
+    if (!svg) {
+        alert("Invalid Android Vector XML.");
+        return;
+    }
+
+    svgOutput.value = svg;
+
+    svgPreview.innerHTML = svg;
+
+    const svgElement = svgPreview.querySelector("svg");
+
+    if (svgElement) {
+
+        svgElement.removeAttribute("width");
+        svgElement.removeAttribute("height");
+
+        svgElement.style.width = "100%";
+        svgElement.style.height = "100%";
+        svgElement.style.display = "block";
+
+        svgElement.setAttribute(
+            "preserveAspectRatio",
+            "xMidYMid meet"
+        );
+
+    }
 
 });
