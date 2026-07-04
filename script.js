@@ -180,6 +180,9 @@ traceBtn.addEventListener("click", () => {
     },
     {
         numberofcolors: Number(colors.value),
+        colorsampling: 2,
+        colorquantcycles: 10,
+        mincolorratio: 0.005,
         ltres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
         qtres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
         pathomit: 0,
