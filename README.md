@@ -8,18 +8,37 @@
 
 ## ✨ Features
 
-- 🖼️ Convert PNG, JPG & WebP to SVG
-- 🤖 Convert SVG to Android VectorDrawable XML
-- 🔄 Convert Android VectorDrawable XML back to SVG
-- 👀 Live Image & SVG Preview
-- 🎨 Adjustable Colors & Detail
-- 🖱️ Drag & Drop Image Upload
-- 📋 Clipboard Paste (Ctrl + V)
-- 📋 Copy SVG & XML
-- 💾 Download SVG, XML & PNG Preview
-- 📁 Preserve Original File Names
-- 🌙 Modern Dark UI
-- ⚡ Fully Client-Side (No Upload Required)
+### 🖼️ Image Conversion
+- Convert PNG, JPG & WebP to SVG
+- Adjustable Colors & Detail
+- Live Image & SVG Preview
+
+### 🤖 Android VectorDrawable
+- SVG → Android VectorDrawable XML
+- Android VectorDrawable XML → SVG
+- Supports:
+  - Fill
+  - Stroke
+  - Stroke Width
+  - Fill Alpha
+  - Stroke Alpha
+  - Fill Rule
+  - Basic Style Attributes
+  - `rgb()`, `#RGB`, `#RRGGBB`
+
+### ⚡ Productivity
+- Drag & Drop Image Upload
+- Clipboard Paste (`Ctrl + V`)
+- Copy SVG & XML
+- Download SVG
+- Download Android XML
+- Download PNG Preview
+- Preserve Original File Names
+
+### 🎨 UI
+- Modern Dark Interface
+- Fully Client-Side (No Upload Required)
+- Fast & Lightweight
 
 ---
 
@@ -40,7 +59,7 @@ git clone https://github.com/Utsavrajputt/img-svg-vector-converter.git
 Open the project:
 
 ```bash
-cd REPOSITORY_NAME
+cd img-svg-vector-converter
 ```
 
 Run using any local web server.
@@ -63,33 +82,54 @@ http://localhost:8000
 
 - HTML5
 - CSS3
-- JavaScript
+- Vanilla JavaScript
 - ImageTracer.js
 
 ---
 
 ## 📌 Roadmap
 
+### ✅ Completed
+
 - [x] Image → SVG
 - [x] SVG → Android VectorDrawable XML
 - [x] Android VectorDrawable XML → SVG
-- [x] Live SVG Preview
+- [x] Live Image & SVG Preview
 - [x] Drag & Drop Support
 - [x] Clipboard Paste
-- [x] Copy & Download
-- [x] Adjustable Tracing Settings
+- [x] Copy SVG & XML
+- [x] Download SVG, XML & PNG Preview
+- [x] Preserve Original File Names
+- [x] Adjustable Colors & Detail
+- [x] Basic Android VectorDrawable Compatibility
+
+### 🚧 Planned
+
 - [ ] Better Android XML Compatibility
+- [ ] Gradient Handling
 - [ ] Adaptive Icon Generator
-- [ ] SVG Optimization (Optional)
 - [ ] GitHub Pages Demo
+- [ ] UI Improvements
+
+---
+
+## ⚠️ Current Limitations
+
+The following SVG features are **not supported yet**:
+
+- Gradients
+- Filters
+- Masks
+- Patterns
+- Clip Paths
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome.
+Contributions, bug reports and feature requests are welcome.
 
-If you'd like to improve this project, feel free to open a Pull Request or create an Issue.
+Feel free to open an **Issue** or submit a **Pull Request**.
 
 ---
 
@@ -97,7 +137,7 @@ If you'd like to improve this project, feel free to open a Pull Request or creat
 
 This project is licensed under the **MIT License**.
 
-See the [LICENSE](LICENSE) file for details.
+See the **LICENSE** file for details.
 
 ---
 
@@ -109,4 +149,4 @@ GitHub: https://github.com/Utsavrajputt
 
 ---
 
-⭐ If you like this project, consider giving it a star on GitHub.
+⭐ If you find this project useful, consider giving it a **Star** on GitHub.
