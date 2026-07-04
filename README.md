@@ -10,9 +10,14 @@
 
 - 🖼️ Convert PNG, JPG & WebP to SVG
 - 🤖 Convert SVG to Android VectorDrawable XML
-- 👀 Live SVG Preview
+- 🔄 Convert Android VectorDrawable XML back to SVG
+- 👀 Live Image & SVG Preview
+- 🎨 Adjustable Colors & Detail
+- 🖱️ Drag & Drop Image Upload
+- 📋 Clipboard Paste (Ctrl + V)
 - 📋 Copy SVG & XML
-- 💾 Download SVG & XML
+- 💾 Download SVG, XML & PNG Preview
+- 📁 Preserve Original File Names
 - 🌙 Modern Dark UI
 - ⚡ Fully Client-Side (No Upload Required)
 
@@ -67,13 +72,16 @@ http://localhost:8000
 
 - [x] Image → SVG
 - [x] SVG → Android VectorDrawable XML
-- [x] SVG Preview
+- [x] Android VectorDrawable XML → SVG
+- [x] Live SVG Preview
+- [x] Drag & Drop Support
+- [x] Clipboard Paste
 - [x] Copy & Download
-- [ ] Better XML Conversion
-- [ ] SVG Optimization
+- [x] Adjustable Tracing Settings
+- [ ] Better Android XML Compatibility
 - [ ] Adaptive Icon Generator
-- [ ] Drag & Drop Support
-- [ ] Advanced Tracing Settings
+- [ ] SVG Optimization (Optional)
+- [ ] GitHub Pages Demo
 
 ---
 
