@@ -72,13 +72,16 @@ http://localhost:8000
 
 - [x] Image → SVG
 - [x] SVG → Android VectorDrawable XML
-- [x] SVG Preview
+- [x] Android VectorDrawable XML → SVG
+- [x] Live SVG Preview
+- [x] Drag & Drop Support
+- [x] Clipboard Paste
 - [x] Copy & Download
-- [ ] Better XML Conversion
-- [ ] SVG Optimization
+- [x] Adjustable Tracing Settings
+- [ ] Better Android XML Compatibility
 - [ ] Adaptive Icon Generator
-- [ ] Drag & Drop Support
-- [ ] Advanced Tracing Settings
+- [ ] SVG Optimization (Optional)
+- [ ] GitHub Pages Demo
 
 ---
 
