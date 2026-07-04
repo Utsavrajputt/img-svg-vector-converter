@@ -10,9 +10,14 @@
 
 - 🖼️ Convert PNG, JPG & WebP to SVG
 - 🤖 Convert SVG to Android VectorDrawable XML
-- 👀 Live SVG Preview
+- 🔄 Convert Android VectorDrawable XML back to SVG
+- 👀 Live Image & SVG Preview
+- 🎨 Adjustable Colors & Detail
+- 🖱️ Drag & Drop Image Upload
+- 📋 Clipboard Paste (Ctrl + V)
 - 📋 Copy SVG & XML
-- 💾 Download SVG & XML
+- 💾 Download SVG, XML & PNG Preview
+- 📁 Preserve Original File Names
 - 🌙 Modern Dark UI
 - ⚡ Fully Client-Side (No Upload Required)
 
