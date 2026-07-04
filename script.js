@@ -22,12 +22,13 @@ const detail = document.getElementById("detail");
 const convertXmlBtn = document.getElementById("convertXmlBtn");
 const downloadPreviewBtn = document.getElementById("downloadPreviewBtn");
 const convertSvgBtn = document.getElementById("convertSvgBtn");
+const dropZone = document.getElementById("dropZone");
 colors.oninput = () => {
     colorsValue.textContent = colors.value;
 };
 
 let imageData = null; // yeh missing tha — file select hone par kabhi set hi nahi hota tha
-
+let fileName = "image";
 
 /* ---------------------------
    File Select → Preview
@@ -35,10 +36,12 @@ let imageData = null; // yeh missing tha — file select hone par kabhi set hi n
 
 imageFile.addEventListener("change", () => {
 
-    const file = imageFile.files[0];
+    
+const file = imageFile.files[0];
 
-    if (!file) return;
+if (!file) return;
 
+fileName = file.name.replace(/\.[^/.]+$/, "");
     const reader = new FileReader();
 
     reader.onload = (e) => {
@@ -58,6 +61,28 @@ imageFile.addEventListener("change", () => {
     reader.readAsDataURL(file);
 
 });
+function loadImage(file) {
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+
+        imageData = e.target.result;
+
+        imagePreview.src = imageData;
+        imagePreview.style.display = "block";
+
+        svgPreview.innerHTML = "";
+        svgOutput.value = "";
+        xmlOutput.value = "";
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
 
 
 /* ---------------------------
@@ -362,7 +387,7 @@ downloadSvgBtn.addEventListener("click", () => {
     const a = document.createElement("a");
 
     a.href = url;
-    a.download = "image.svg";
+    a.download = `${fileName}.svg`;
 
     document.body.appendChild(a);
 
@@ -391,8 +416,7 @@ downloadBtn.addEventListener("click", () => {
     const a = document.createElement("a");
 
     a.href = url;
-    a.download = "vector.xml";
-
+a.download = `${fileName}.xml`;
     document.body.appendChild(a);
 
     a.click();
@@ -479,7 +503,7 @@ downloadPreviewBtn.addEventListener("click", () => {
 
         const a = document.createElement("a");
 
-        a.download = "preview.png";
+       a.download = `${fileName}_preview.png`;
         a.href = canvas.toDataURL("image/png");
 
         a.click();
@@ -528,6 +552,41 @@ convertSvgBtn.addEventListener("click", () => {
             "preserveAspectRatio",
             "xMidYMid meet"
         );
+
+    }
+
+});
+document.addEventListener("paste", async (e) => {
+
+    const items = e.clipboardData.items;
+
+    for (const item of items) {
+
+        if (item.type.startsWith("image/")) {
+
+            const file = item.getAsFile();
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+
+                imageData = event.target.result;
+
+                imagePreview.src = imageData;
+                imagePreview.style.display = "block";
+
+                svgPreview.innerHTML = "";
+                svgOutput.value = "";
+                xmlOutput.value = "";
+
+            };
+
+            reader.readAsDataURL(file);
+
+            break;
+        }
 
     }
 
