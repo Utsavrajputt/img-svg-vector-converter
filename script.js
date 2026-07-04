@@ -2,68 +2,114 @@
    Element References
 ---------------------------- */
 
-const imageFile     = document.getElementById("imageFile");
-const traceBtn       = document.getElementById("traceBtn");
+const imageFile          = document.getElementById("imageFile");
+const traceBtn            = document.getElementById("traceBtn");
 
-const imagePreview   = document.getElementById("imagePreview");
-const svgPreview      = document.getElementById("svgPreview");
+const imagePreview        = document.getElementById("imagePreview");
+const svgPreview           = document.getElementById("svgPreview");
 
-const svgOutput       = document.getElementById("svgOutput");
-const xmlOutput       = document.getElementById("xmlOutput");
+const svgOutput            = document.getElementById("svgOutput");
+const xmlOutput            = document.getElementById("xmlOutput");
 
-const copySvgBtn      = document.getElementById("copySvgBtn");
-const copyXmlBtn      = document.getElementById("copyXmlBtn");
+const copySvgBtn           = document.getElementById("copySvgBtn");
+const copyXmlBtn           = document.getElementById("copyXmlBtn");
 
-const downloadSvgBtn  = document.getElementById("downloadSvgBtn");
-const downloadBtn     = document.getElementById("downloadBtn");
-const colors = document.getElementById("colors");
-const colorsValue = document.getElementById("colorsValue");
-const detail = document.getElementById("detail");
-const convertXmlBtn = document.getElementById("convertXmlBtn");
-const downloadPreviewBtn = document.getElementById("downloadPreviewBtn");
-const convertSvgBtn = document.getElementById("convertSvgBtn");
-const dropZone = document.getElementById("dropZone");
+const downloadSvgBtn       = document.getElementById("downloadSvgBtn");
+const downloadBtn          = document.getElementById("downloadBtn");
+const downloadPreviewBtn   = document.getElementById("downloadPreviewBtn");
+
+const convertXmlBtn        = document.getElementById("convertXmlBtn");
+const convertSvgBtn        = document.getElementById("convertSvgBtn");
+
+const colors               = document.getElementById("colors");
+const colorsValue          = document.getElementById("colorsValue");
+const detail                = document.getElementById("detail");
+
+const dropZone              = document.getElementById("dropZone");
+
+const progressWrap          = document.getElementById("progressWrap");
+const progressFill          = document.getElementById("progressFill");
+const progressText          = document.getElementById("progressText");
+
+const TRACE_BTN_ICON  = `<span class="material-symbols-rounded">sync_alt</span>`;
+const TRACE_BTN_LABEL = "Image → XML";
+
+let imageData = null;
+let fileName  = "image";
+
 colors.oninput = () => {
     colorsValue.textContent = colors.value;
 };
 
-let imageData = null; // yeh missing tha — file select hone par kabhi set hi nahi hota tha
-let fileName = "image";
-
 /* ---------------------------
-   File Select → Preview
+   Progress Bar Helper
+   (ImageTracer callback real progress nahi deta,
+   isliye ek counter chalate hain jo 1,2,3...
+   karke gradually badhta hai. Processing ke doran
+   97% tak jaata hai, aur jaise hi asli kaam khatam
+   hota hai baaki ke numbers jaldi jaldi count karke
+   100 tak pahुnch jaata hai)
 ---------------------------- */
 
-imageFile.addEventListener("change", () => {
+let _counterInterval = null;
+let _currentProgress = 0;
 
-    
-const file = imageFile.files[0];
+function setProgress(pct) {
+    _currentProgress = pct;
+    progressFill.style.width = pct + "%";
+    progressText.textContent = Math.round(pct) + "%";
+}
 
-if (!file) return;
+function startCounting() {
 
-fileName = file.name.replace(/\.[^/.]+$/, "");
-    const reader = new FileReader();
+    progressWrap.classList.add("active");
+    setProgress(0);
 
-    reader.onload = (e) => {
+    clearInterval(_counterInterval);
 
-        imageData = e.target.result; // data URL — ImageTracer isi ko use karega
+    _counterInterval = setInterval(() => {
 
-        imagePreview.src = imageData;
-        imagePreview.style.display = "block";
+        if (_currentProgress < 97) {
+            setProgress(_currentProgress + 1);
+        }
 
-        // Naya image select karne par purana output clear kar do
-        svgPreview.innerHTML = "";
-        svgOutput.value = "";
-        xmlOutput.value = "";
+    }, 30);
 
-    };
+}
 
-    reader.readAsDataURL(file);
+function finishCounting(onComplete) {
 
-});
+    clearInterval(_counterInterval);
+
+    function tick() {
+
+        if (_currentProgress < 100) {
+            setProgress(_currentProgress + 1);
+            setTimeout(tick, 12);
+            return;
+        }
+
+        setTimeout(() => {
+            progressWrap.classList.remove("active");
+            setProgress(0);
+            if (onComplete) onComplete();
+        }, 300);
+
+    }
+
+    tick();
+
+}
+
+/* ---------------------------
+   Image Loading (file input, drag&drop, paste — sabke liye ek hi function)
+---------------------------- */
+
 function loadImage(file) {
 
     if (!file) return;
+
+    fileName = file.name ? file.name.replace(/\.[^/.]+$/, "") : fileName;
 
     const reader = new FileReader();
 
@@ -74,6 +120,7 @@ function loadImage(file) {
         imagePreview.src = imageData;
         imagePreview.style.display = "block";
 
+        // Naya image aane par purana output clear kar do
         svgPreview.innerHTML = "";
         svgOutput.value = "";
         xmlOutput.value = "";
@@ -84,6 +131,9 @@ function loadImage(file) {
 
 }
 
+imageFile.addEventListener("change", () => {
+    loadImage(imageFile.files[0]);
+});
 
 /* ---------------------------
    Drag & Drop
@@ -118,7 +168,6 @@ if (dropZone) {
             return;
         }
 
-        fileName = file.name.replace(/\.[^/.]+$/, "");
         loadImage(file);
 
     });
@@ -126,7 +175,26 @@ if (dropZone) {
 }
 
 /* ---------------------------
-   Convert Button
+   Paste Image
+---------------------------- */
+
+document.addEventListener("paste", (e) => {
+
+    const items = e.clipboardData.items;
+
+    for (const item of items) {
+
+        if (item.type.startsWith("image/")) {
+            loadImage(item.getAsFile());
+            break;
+        }
+
+    }
+
+});
+
+/* ---------------------------
+   Convert Button (Image → SVG → Android XML)
 ---------------------------- */
 
 traceBtn.addEventListener("click", () => {
@@ -142,54 +210,57 @@ traceBtn.addEventListener("click", () => {
     }
 
     traceBtn.disabled = true;
-    traceBtn.textContent = "Converting...";
+    traceBtn.innerHTML = `${TRACE_BTN_ICON} Converting...`;
 
-   ImageTracer.imageToSVG(
-    imageData,
-    function (svgString) {
+    startCounting();
 
-        svgOutput.value = svgString;
+    ImageTracer.imageToSVG(
+        imageData,
+        function (svgString) {
 
-        svgPreview.innerHTML = svgString;
+            svgOutput.value = svgString;
+            svgPreview.innerHTML = svgString;
 
-        const svg = svgPreview.querySelector("svg");
+            const svg = svgPreview.querySelector("svg");
 
-        if (svg) {
+            if (svg) {
 
-            const w = svg.getAttribute("width") || "432";
-            const h = svg.getAttribute("height") || "432";
+                const w = svg.getAttribute("width") || "432";
+                const h = svg.getAttribute("height") || "432";
 
-            if (!svg.hasAttribute("viewBox")) {
-                svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+                if (!svg.hasAttribute("viewBox")) {
+                    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+                }
+
+                svg.removeAttribute("width");
+                svg.removeAttribute("height");
+
+                svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+                svg.style.width = "100%";
+                svg.style.height = "100%";
+                svg.style.display = "block";
             }
 
-            svg.removeAttribute("width");
-            svg.removeAttribute("height");
+            xmlOutput.value = convertSvgToVector(svgString);
 
-            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-
-            svg.style.width = "100%";
-            svg.style.height = "100%";
-            svg.style.display = "block";
+            finishCounting(() => {
+                traceBtn.disabled = false;
+                traceBtn.innerHTML = `${TRACE_BTN_ICON} ${TRACE_BTN_LABEL}`;
+            });
+        },
+        {
+            numberofcolors: Number(colors.value),
+            colorsampling: 2,
+            colorquantcycles: 10,
+            mincolorratio: 0.005,
+            ltres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
+            qtres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
+            pathomit: 0,
+            scale: 1,
+            viewbox: true
         }
-
-        xmlOutput.value = convertSvgToVector(svgString);
-
-        traceBtn.disabled = false;
-        traceBtn.textContent = "Image → SVG";
-    },
-    {
-        numberofcolors: Number(colors.value),
-        colorsampling: 2,
-        colorquantcycles: 10,
-        mincolorratio: 0.005,
-        ltres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
-        qtres: detail.value === "high" ? 0.5 : detail.value === "low" ? 2 : 1,
-        pathomit: 0,
-        scale: 1,
-        viewbox: true
-    }
-);
+    );
 
 });
 
@@ -732,41 +803,6 @@ convertSvgBtn.addEventListener("click", () => {
             "preserveAspectRatio",
             "xMidYMid meet"
         );
-
-    }
-
-});
-document.addEventListener("paste", async (e) => {
-
-    const items = e.clipboardData.items;
-
-    for (const item of items) {
-
-        if (item.type.startsWith("image/")) {
-
-            const file = item.getAsFile();
-
-            if (!file) return;
-
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-
-                imageData = event.target.result;
-
-                imagePreview.src = imageData;
-                imagePreview.style.display = "block";
-
-                svgPreview.innerHTML = "";
-                svgOutput.value = "";
-                xmlOutput.value = "";
-
-            };
-
-            reader.readAsDataURL(file);
-
-            break;
-        }
 
     }
 

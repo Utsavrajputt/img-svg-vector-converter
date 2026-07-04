@@ -16,14 +16,28 @@ body{
     margin:30px auto;
 }
 
+/* Header */
+
 header{
     text-align:center;
     margin-bottom:25px;
 }
 
+.brand{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:8px;
+}
+
+.logo-icon{
+    font-size:30px;
+    color:#4f7cff;
+}
+
 header h1{
     font-size:32px;
-    margin-bottom:8px;
 }
 
 header p{
@@ -40,16 +54,62 @@ header p{
 
 .top-bar{
     display:flex;
+    align-items:stretch;
     gap:15px;
+    width:100%;
 }
 
-.top-bar input{
-    flex:1;
+.top-bar > .settings{
+    flex:1 1 260px;
+    margin-bottom:0;
+}
+
+.top-bar > #traceBtn{
+    flex:0 0 auto;
+}
+
+/* Drop Zone (visible file input on the left, label beside it) */
+
+.drop-zone{
+    flex:2 1 320px;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:#181c27;
+    border:2px dashed #2b3142;
+    border-radius:10px;
+    padding:10px 16px;
+    color:#9ca3af;
+    font-size:14px;
+    transition:.2s;
+}
+
+.drop-zone.dragover{
+    border-color:#4f7cff;
+    background:#1c2233;
+    color:#fff;
+}
+
+.drop-zone input[type="file"]{
+    flex:0 0 auto;
+}
+
+#dropZoneText{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    text-align: end;
 }
 
 /* Buttons */
 
 button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    white-space:nowrap;
     background:#4f7cff;
     color:white;
     border:none;
@@ -63,14 +123,70 @@ button:hover{
     background:#3b68ec;
 }
 
-/* File */
+button:disabled{
+    background:#3b4258;
+    cursor:not-allowed;
+}
+
+.material-symbols-rounded{
+    font-size:20px;
+}
+
+.buttons{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.buttons button{
+    flex:1;
+}
+
+/* File input */
 
 input[type=file]{
     background:#181c27;
     color:white;
     border:1px solid #2b3142;
     border-radius:10px;
-    padding:12px;
+    padding:10px 12px;
+}
+
+/* Progress Bar */
+
+.progress-wrap{
+    display:none;
+    align-items:center;
+    gap:12px;
+    margin-top:-5px;
+}
+
+.progress-wrap.active{
+    display:flex;
+}
+
+.progress-track{
+    flex:1;
+    height:8px;
+    background:#181c27;
+    border:1px solid #2b3142;
+    border-radius:6px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:#2f9e5b;
+    border-radius:6px;
+    transition:width .25s ease;
+}
+
+.progress-text{
+    min-width:42px;
+    text-align:right;
+    font-size:13px;
+    color:#9ca3af;
 }
 
 /* Preview */
@@ -99,11 +215,9 @@ input[type=file]{
     height:260px;
     background:#10141d;
     border-radius:10px;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     overflow:hidden;
 }
 
@@ -119,16 +233,7 @@ input[type=file]{
 }
 
 /* Outputs */
-.buttons button{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-}
 
-.material-symbols-rounded{
-    font-size:20px;
-}
 .output-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -150,60 +255,22 @@ textarea{
     width:100%;
     height:230px;
     resize:vertical;
-
     background:#10141d;
     color:white;
-
     border:1px solid #2b3142;
     border-radius:10px;
-
     padding:15px;
-
     font-family:Consolas,monospace;
     font-size:13px;
 }
 
-/* Buttons */
+/* Settings */
 
-.buttons{
-    display:flex;
-    gap:10px;
-    margin-top:10px;
-}
-
-.buttons button{
-    flex:1;
-}
-
-/* Mobile */
-
-@media (max-width:900px){
-
-    .top-bar{
-        flex-direction:column;
-    }
-
-    .viewer-grid,
-    .output-grid{
-        grid-template-columns:1fr;
-    }
-
-    #imagePreview,
-    #svgPreview{
-        height:220px;
-    }
-
-    textarea{
-        height:180px;
-    }
-
-}
 .settings{
     display:flex;
     align-items:center;
     gap:20px;
     flex-wrap:wrap;
-    margin-bottom:20px;
 }
 
 .setting{
@@ -232,4 +299,35 @@ textarea{
 #colorsValue{
     min-width:25px;
     text-align:center;
+}
+
+/* Mobile */
+
+@media (max-width:900px){
+
+    .top-bar{
+        flex-direction:column;
+    }
+
+    .top-bar > .settings,
+    .top-bar > #traceBtn,
+    .drop-zone{
+        flex:1 1 auto;
+        width:100%;
+    }
+
+    .viewer-grid,
+    .output-grid{
+        grid-template-columns:1fr;
+    }
+
+    #imagePreview,
+    #svgPreview{
+        height:220px;
+    }
+
+    textarea{
+        height:180px;
+    }
+
 }

@@ -4,15 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image → SVG → Android Vector</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container"><div class="container"></div>
+<div class="container">
+
     <header>
-        <h1>Image → SVG → Android Vector</h1>
-        <p>Convert PNG, JPG & WebP into Android VectorDrawable XML</p>
+        <div class="brand">
+            <span class="material-symbols-rounded logo-icon">deployed_code</span>
+            <h1>Image → SVG → Android Vector</h1>
+        </div>
+        <p>Convert PNG, JPG &amp; WebP into Android VectorDrawable XML</p>
     </header>
 
     <section class="controls">
@@ -21,7 +26,8 @@
 
             <div id="dropZone" class="drop-zone">
                 <input type="file" id="imageFile" accept="image/*">
-                <span id="dropZoneText">ya yahan image drag &amp; drop karein</span>
+                <span id="dropZoneText">Drag & drop, paste, &amp; or upload an image here</span>
+                
             </div>
 
             <div class="settings">
@@ -44,9 +50,17 @@
             </div>
 
             <button id="traceBtn">
-                Image → SVG
+                <span class="material-symbols-rounded">sync_alt</span>
+                Image → XML
             </button>
 
+        </div>
+
+        <div id="progressWrap" class="progress-wrap">
+            <div class="progress-track">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <span id="progressText" class="progress-text">0%</span>
         </div>
 
         <!-- Preview Section -->
@@ -69,70 +83,55 @@
 
             <!-- SVG Code -->
             <div class="panel">
-
                 <h3>📄 SVG Code</h3>
 
-                <textarea
-                    id="svgOutput"
-                    placeholder="Generated SVG ya apna SVG yahan paste kare..."></textarea>
+                <textarea id="svgOutput" placeholder="Paste your generated SVG or your own SVG here..."></textarea>
 
                 <div class="buttons">
-                  <div class="buttons">
-   <button id="copySvgBtn">
-    <span class="material-symbols-rounded">content_copy</span>
-    Copy
-</button>
+                    <button id="copySvgBtn">
+                        <span class="material-symbols-rounded">content_copy</span>
+                        Copy
+                    </button>
 
-<button id="downloadSvgBtn">
-    <span class="material-symbols-rounded">download</span>
-    SVG
-</button>
+                    <button id="downloadSvgBtn">
+                        <span class="material-symbols-rounded">download</span>
+                        SVG
+                    </button>
 
-<button id="downloadPreviewBtn">
-    <span class="material-symbols-rounded">image</span>
-    PNG
-</button>
+                    <button id="downloadPreviewBtn">
+                        <span class="material-symbols-rounded">image</span>
+                        Download
+                    </button>
 
-<button id="convertXmlBtn">
-    <span class="material-symbols-rounded">code</span>
-    XML
-</button>
-</div>
+                    <button id="convertXmlBtn">
+                        <span class="material-symbols-rounded">sync_alt</span>
+                        XML
+                    </button>
                 </div>
-
             </div>
 
             <!-- Android XML -->
             <div class="panel">
-
                 <h3>🤖 Android XML</h3>
 
-                <textarea
-    id="xmlOutput"
-    placeholder="Generated XML ya Android Vector XML yahan paste kare...">
-</textarea>
+                <textarea id="xmlOutput" placeholder="Paste the generated XML or Android Vector XML here..."></textarea>
 
                 <div class="buttons">
-                    
+                    <button id="copyXmlBtn">
+                        <span class="material-symbols-rounded">content_copy</span>
+                        Copy
+                    </button>
 
-    <button id="copyXmlBtn">
-        <span class="material-symbols-rounded">content_copy</span>
-        Copy
-    </button>
+                    <button id="downloadBtn">
+                        <span class="material-symbols-rounded">download</span>
+                        XML
+                    </button>
 
-    <button id="downloadBtn">
-        <span class="material-symbols-rounded">download</span>
-        XML
-    </button>
-
-    <button id="convertSvgBtn">
-        <span class="material-symbols-rounded">imagesmode</span>
-        SVG
-    </button>
-
-</div>
+                    <button id="convertSvgBtn">
+                        <span class="material-symbols-rounded">sync_alt</span>
+                        SVG
+                    </button>
                 </div>
-
             </div>
 
         </div>
