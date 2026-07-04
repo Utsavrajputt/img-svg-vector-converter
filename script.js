@@ -150,7 +150,103 @@ traceBtn.addEventListener("click", () => {
 
 });
 
+/* ---------------------------
+   SVG Helper Functions
+---------------------------- */
 
+function svgColorToAndroid(color) {
+
+    if (!color || color === "none") return null;
+
+    color = color.trim();
+
+    // rgb(255,0,0)
+    if (color.startsWith("rgb(")) {
+
+        const rgb = color.match(/\d+/g);
+
+        if (rgb && rgb.length >= 3) {
+
+            return (
+                "#FF" +
+                Number(rgb[0]).toString(16).padStart(2, "0") +
+                Number(rgb[1]).toString(16).padStart(2, "0") +
+                Number(rgb[2]).toString(16).padStart(2, "0")
+            ).toUpperCase();
+
+        }
+
+    }
+
+    // #RRGGBB
+    if (/^#[0-9A-F]{6}$/i.test(color)) {
+        return ("#FF" + color.substring(1)).toUpperCase();
+    }
+
+    // #RGB
+    if (/^#[0-9A-F]{3}$/i.test(color)) {
+
+        return (
+            "#FF" +
+            color[1] + color[1] +
+            color[2] + color[2] +
+            color[3] + color[3]
+        ).toUpperCase();
+
+    }
+
+    return color;
+
+}
+
+function getSvgAlpha(path, attribute) {
+
+    const value = path.getAttribute(attribute);
+
+    if (!value) return null;
+
+    const alpha = parseFloat(value);
+
+    if (isNaN(alpha) || alpha >= 1) return null;
+
+    return alpha;
+
+}
+
+function getSvgFillType(path) {
+
+    const rule = path.getAttribute("fill-rule");
+
+    if (!rule) return null;
+
+    return rule === "evenodd"
+        ? "evenOdd"
+        : "nonZero";
+
+}
+function getStyleValue(path, property) {
+
+    const style = path.getAttribute("style");
+
+    if (!style) return null;
+
+    const styles = style.split(";");
+
+    for (const item of styles) {
+
+        const parts = item.split(":");
+
+        if (parts.length !== 2) continue;
+
+        if (parts[0].trim() === property) {
+            return parts[1].trim();
+        }
+
+    }
+
+    return null;
+
+}
 /* ---------------------------
    SVG → Android XML
 ---------------------------- */
@@ -190,8 +286,17 @@ function convertSvgToVector(svg) {
     paths.forEach(path => {
 
         let fill = path.getAttribute("fill") || "#000000";
+        if (!path.getAttribute("fill")) {
 
-        if (fill === "none") return;
+    const styleFill = getStyleValue(path, "fill");
+
+    if (styleFill) {
+        fill = styleFill;
+    }
+
+}
+
+       const hasFill = fill !== "none";
 
         if (fill.startsWith("rgb")) {
 
@@ -211,7 +316,9 @@ function convertSvgToVector(svg) {
 
         if (/^#[0-9a-fA-F]{6}$/.test(fill)) {
             fill = ("#FF" + fill.substring(1)).toUpperCase();
+            
         }
+        fill = svgColorToAndroid(fill);
 
         const opacity = parseFloat(path.getAttribute("opacity") || "1");
 
@@ -220,12 +327,58 @@ function convertSvgToVector(svg) {
         const d = path.getAttribute("d");
 
         if (!d) return;
+        // Stroke
+let stroke = path.getAttribute("stroke");
+if (!stroke) {
+    stroke = getStyleValue(path, "stroke");
+}
 
-        xml += `
+if (stroke && stroke !== "none") {
+    stroke = svgColorToAndroid(stroke);
+} else {
+    stroke = null;
+}
+
+// Stroke Width
+const strokeWidth = path.getAttribute("stroke-width");
+const finalStrokeWidth =
+    strokeWidth || getStyleValue(path, "stroke-width");
+
+// Fill Alpha
+const fillAlpha = getSvgAlpha(path, "fill-opacity");
+
+// Stroke Alpha
+const strokeAlpha = getSvgAlpha(path, "stroke-opacity");
+
+// Fill Rule
+const fillType = getSvgFillType(path);
+xml += `
 
     <path
-        android:pathData="${d}"
-        android:fillColor="${fill}" />`;
+        android:pathData="${d}"`;
+
+if (hasFill)
+    xml += `
+        android:fillColor="${fill}"`;
+if (stroke)
+    xml += `
+        android:strokeColor="${stroke}"`;
+
+if (fillAlpha !== null)
+    xml += `
+        android:fillAlpha="${fillAlpha}"`;
+
+if (finalStrokeWidth)
+    xml += `
+        android:strokeWidth="${finalStrokeWidth}"`;
+if (strokeAlpha !== null)
+    xml += `
+        android:strokeAlpha="${strokeAlpha}"`;
+if (fillType)
+    xml += `
+        android:fillType="${fillType}"`;
+
+xml += ` />`;
 
     });
 
@@ -237,9 +390,6 @@ function convertSvgToVector(svg) {
 
 }
 
-/* ---------------------------
-    Android XML T0 SVG
----------------------------- */
 function convertVectorToSvg(xml) {
 
     const parser = new DOMParser();
@@ -321,8 +471,8 @@ fill-opacity="${fillAlpha}"`;
             svg += `
 stroke="${stroke}"`;
 
-        if (strokeWidth)
-            svg += `
+if (strokeWidth)
+    svg += `
 stroke-width="${strokeWidth}"`;
 
         if (strokeAlpha)
