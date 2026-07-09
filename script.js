@@ -514,86 +514,158 @@ function convertVectorToSvg(xml) {
 `<svg xmlns="http://www.w3.org/2000/svg"
 viewBox="0 0 ${width} ${height}">`;
 
-    const paths = vector.querySelectorAll("path");
-
-    paths.forEach(path => {
-
-        const d =
-            path.getAttribute("android:pathData") ||
-            path.getAttribute("pathData");
-
-        if (!d) return;
-
-        let fill =
-            path.getAttribute("android:fillColor") ||
-            path.getAttribute("fillColor");
-
-        if (!fill) fill = "#000000";
-
-        if (/^#FF/i.test(fill)) {
-            fill = "#" + fill.substring(3);
-        }
-
-        let fillAlpha =
-            path.getAttribute("android:fillAlpha") ||
-            path.getAttribute("fillAlpha");
-
-        let stroke =
-            path.getAttribute("android:strokeColor") ||
-            path.getAttribute("strokeColor");
-
-        if (stroke && /^#FF/i.test(stroke)) {
-            stroke = "#" + stroke.substring(3);
-        }
-
-        let strokeWidth =
-            path.getAttribute("android:strokeWidth") ||
-            path.getAttribute("strokeWidth");
-
-        let strokeAlpha =
-            path.getAttribute("android:strokeAlpha") ||
-            path.getAttribute("strokeAlpha");
-
-        let fillType =
-            path.getAttribute("android:fillType") ||
-            path.getAttribute("fillType");
-
-        svg += `
-
-<path
-d="${d}"
-fill="${fill}"`;
-
-        if (fillAlpha)
-            svg += `
-fill-opacity="${fillAlpha}"`;
-
-        if (stroke)
-            svg += `
-stroke="${stroke}"`;
-
-if (strokeWidth)
-    svg += `
-stroke-width="${strokeWidth}"`;
-
-        if (strokeAlpha)
-            svg += `
-stroke-opacity="${strokeAlpha}"`;
-
-        if (fillType)
-            svg += `
-fill-rule="${fillType === "evenOdd" ? "evenodd" : "nonzero"}"`;
-
-        svg += `
-/>`;
-
-    });
+    svg += renderVectorNode(vector);
 
     svg += `
 
 </svg>`;
 
     return svg;
+
+}
+
+// Turns a single Android <path> element into an SVG <path> string.
+function renderVectorPath(path) {
+
+    const d =
+        path.getAttribute("android:pathData") ||
+        path.getAttribute("pathData");
+
+    if (!d) return "";
+
+    let fill =
+        path.getAttribute("android:fillColor") ||
+        path.getAttribute("fillColor");
+
+    if (!fill) fill = "#000000";
+
+    if (/^#FF/i.test(fill)) {
+        fill = "#" + fill.substring(3);
+    }
+
+    let fillAlpha =
+        path.getAttribute("android:fillAlpha") ||
+        path.getAttribute("fillAlpha");
+
+    let stroke =
+        path.getAttribute("android:strokeColor") ||
+        path.getAttribute("strokeColor");
+
+    if (stroke && /^#FF/i.test(stroke)) {
+        stroke = "#" + stroke.substring(3);
+    }
+
+    let strokeWidth =
+        path.getAttribute("android:strokeWidth") ||
+        path.getAttribute("strokeWidth");
+
+    let strokeAlpha =
+        path.getAttribute("android:strokeAlpha") ||
+        path.getAttribute("strokeAlpha");
+
+    let fillType =
+        path.getAttribute("android:fillType") ||
+        path.getAttribute("fillType");
+
+    let svg = `
+
+<path
+d="${d}"
+fill="${fill}"`;
+
+    if (fillAlpha)
+        svg += `
+fill-opacity="${fillAlpha}"`;
+
+    if (stroke)
+        svg += `
+stroke="${stroke}"`;
+
+    if (strokeWidth)
+        svg += `
+stroke-width="${strokeWidth}"`;
+
+    if (strokeAlpha)
+        svg += `
+stroke-opacity="${strokeAlpha}"`;
+
+    if (fillType)
+        svg += `
+fill-rule="${fillType === "evenOdd" ? "evenodd" : "nonzero"}"`;
+
+    svg += `
+/>`;
+
+    return svg;
+
+}
+
+// Builds an SVG transform= string matching Android's <group> transform
+// order: translate(translateX,translateY) -> pivot -> rotate -> scale -> -pivot.
+// Returns null when the group has no actual transform (nothing to wrap).
+function androidGroupTransform(group) {
+
+    const attr = (name, def) => {
+        const v =
+            group.getAttribute("android:" + name) ||
+            group.getAttribute(name);
+        const n = v !== null ? parseFloat(v) : NaN;
+        return isNaN(n) ? def : n;
+    };
+
+    const translateX = attr("translateX", 0);
+    const translateY = attr("translateY", 0);
+    const scaleX = attr("scaleX", 1);
+    const scaleY = attr("scaleY", 1);
+    const pivotX = attr("pivotX", 0);
+    const pivotY = attr("pivotY", 0);
+    const rotation = attr("rotation", 0);
+
+    if (translateX === 0 && translateY === 0 && scaleX === 1 && scaleY === 1 && rotation === 0) {
+        return null; // identity transform, no need to wrap in a <g>
+    }
+
+    let t = `translate(${translateX} ${translateY})`;
+
+    if (pivotX || pivotY) t += ` translate(${pivotX} ${pivotY})`;
+    if (rotation) t += ` rotate(${rotation})`;
+    if (scaleX !== 1 || scaleY !== 1) t += ` scale(${scaleX} ${scaleY})`;
+    if (pivotX || pivotY) t += ` translate(${-pivotX} ${-pivotY})`;
+
+    return t;
+
+}
+
+// Recursively walks <path> and <group> children of a vector/group node,
+// applying each group's transform so nested/grouped Android vector XML
+// (like the adaptive icon foreground exports) previews correctly instead
+// of paths silently landing outside the viewBox.
+function renderVectorNode(node) {
+
+    let out = "";
+
+    for (const child of Array.from(node.children)) {
+
+        const tag = child.tagName.toLowerCase();
+
+        if (tag === "path") {
+
+            out += renderVectorPath(child);
+
+        } else if (tag === "group") {
+
+            const transform = androidGroupTransform(child);
+            const inner = renderVectorNode(child);
+
+            out += transform
+                ? `<g transform="${transform}">${inner}</g>`
+                : inner;
+
+        }
+
+    }
+
+    return out;
 
 }
 

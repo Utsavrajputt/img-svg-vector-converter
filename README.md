@@ -1,5 +1,4 @@
 # Image → SVG → Android Vector Converter
-
 🚀 A lightweight web tool to convert **PNG, JPG, and WebP** images into **SVG** and **Android VectorDrawable XML** directly in your browser.
 
 > ⚠️ This project is currently under active development.
@@ -12,6 +11,7 @@
 - Convert PNG, JPG & WebP to SVG
 - Adjustable Colors & Detail
 - Live Image & SVG Preview
+- Live conversion progress bar
 
 ### 🤖 Android VectorDrawable
 - SVG → Android VectorDrawable XML
@@ -39,11 +39,11 @@
 - Modern Dark Interface
 - Fully Client-Side (No Upload Required)
 - Fast & Lightweight
+- Custom favicon
 
 ---
 
 ## 📸 Preview
-
 > Screenshots will be added soon.
 
 ---
@@ -51,27 +51,22 @@
 ## 🚀 Getting Started
 
 Clone the repository:
-
 ```bash
 git clone https://github.com/Utsavrajputt/img-svg-vector-converter.git
 ```
 
 Open the project:
-
 ```bash
 cd img-svg-vector-converter
 ```
 
 Run using any local web server.
-
 Example:
-
 ```bash
 python -m http.server
 ```
 
 Then open:
-
 ```
 http://localhost:8000
 ```
@@ -79,7 +74,6 @@ http://localhost:8000
 ---
 
 ## 🛠️ Built With
-
 - HTML5
 - CSS3
 - Vanilla JavaScript
@@ -90,7 +84,6 @@ http://localhost:8000
 ## 📌 Roadmap
 
 ### ✅ Completed
-
 - [x] Image → SVG
 - [x] SVG → Android VectorDrawable XML
 - [x] Android VectorDrawable XML → SVG
@@ -102,9 +95,10 @@ http://localhost:8000
 - [x] Preserve Original File Names
 - [x] Adjustable Colors & Detail
 - [x] Basic Android VectorDrawable Compatibility
+- [x] Live Conversion Progress Bar
+- [x] Custom Favicon
 
 ### 🚧 Planned
-
 - [ ] Better Android XML Compatibility
 - [ ] Gradient Handling
 - [ ] Adaptive Icon Generator
@@ -114,9 +108,7 @@ http://localhost:8000
 ---
 
 ## ⚠️ Current Limitations
-
 The following SVG features are **not supported yet**:
-
 - Gradients
 - Filters
 - Masks
@@ -126,25 +118,19 @@ The following SVG features are **not supported yet**:
 ---
 
 ## 🤝 Contributing
-
 Contributions, bug reports and feature requests are welcome.
-
 Feel free to open an **Issue** or submit a **Pull Request**.
 
 ---
 
 ## 📄 License
-
 This project is licensed under the **MIT License**.
-
 See the **LICENSE** file for details.
 
 ---
 
 ## 👨‍💻 Author
-
 **Utsav Rajput**
-
 GitHub: https://github.com/Utsavrajputt
 
 ---
